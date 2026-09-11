@@ -115,7 +115,7 @@
       letter-spacing: 0.5px;
     }
 
-    /* CRÉDITOS PRINCIPALES DEBAJO DEL TÍTULO */
+    /* BLOQUE DE AUTORÍA */
     .credits-badge {
       margin-top: 0.85rem;
       padding: 0.65rem 0.9rem;
@@ -330,17 +330,14 @@
   <script>
     // =========================================================================
     // CONFIGURACIÓN DE CONEXIÓN CON GOOGLE SHEETS
-    // Pega aquí directamente la URL de tu Web App de Apps Script:
     // =========================================================================
     const DEFAULT_SCRIPT_URL = "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT";
-    
     const STORAGE_KEY = "url_asistencia_estudiantes_puntos";
     let scriptUrl = localStorage.getItem(STORAGE_KEY) || DEFAULT_SCRIPT_URL;
 
-    // Atajo: Si necesitas cambiar o pegar la URL desde el celular sin editar código,
-    // haz DOBLE CLIC o DOBLE TOQUE sobre el título "Control de Participación"
+    // Atajo: doble toque sobre el título para configurar o actualizar la URL
     document.getElementById("appTitle").addEventListener("dblclick", () => {
-      const nuevaUrl = prompt("Ingresa la URL de tu Google Apps Script:", scriptUrl);
+      const nuevaUrl = prompt("Ingresa la URL del Web App de Apps Script (debe terminar en /exec):", scriptUrl);
       if (nuevaUrl && nuevaUrl.trim() !== "") {
         scriptUrl = nuevaUrl.trim();
         localStorage.setItem(STORAGE_KEY, scriptUrl);
@@ -359,7 +356,7 @@
 
     let isCooldown = false;
 
-    // Sonido nativo de confirmación
+    // Sonido nativo de retroalimentación
     function emitBeep(success = true) {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -369,12 +366,12 @@
         gain.connect(audioCtx.destination);
 
         if (success) {
-          osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Tono A5 agudo
           gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
           osc.start();
           osc.stop(audioCtx.currentTime + 0.15);
         } else {
-          osc.frequency.setValueAtTime(280, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(280, audioCtx.currentTime); // Tono grave
           gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
           osc.start();
           osc.stop(audioCtx.currentTime + 0.3);
@@ -407,16 +404,18 @@
 
       if (navigator.vibrate) navigator.vibrate(80);
 
-      // Estado de carga
+      // Estado de procesamiento
       resultCard.className = "result-card";
       badgeStatus.innerText = "PROCESANDO";
       studentName.innerText = "Registrando punto...";
       scoreWrapper.style.display = "none";
-      statusMsg.innerText = `Código detectado: ${decodedText}`;
+      statusMsg.innerText = `Código: ${decodedText}`;
 
       try {
         const res = await fetch(scriptUrl, {
           method: "POST",
+          mode: "cors",
+          redirect: "follow",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ codigo: decodedText })
         });
@@ -432,7 +431,7 @@
           studentName.innerText = data.nombre;
           totalPoints.innerText = data.totalPuntos;
           scoreWrapper.style.display = "block";
-          statusMsg.innerText = "Punto sumado con éxito en Google Sheets";
+          statusMsg.innerText = "Guardado con éxito en Google Sheets";
 
           addHistoryRow(data.nombre, data.totalPuntos);
         } else {
@@ -441,15 +440,16 @@
           badgeStatus.innerText = "NO ENCONTRADO";
           studentName.innerText = "Estudiante no registrado";
           scoreWrapper.style.display = "none";
-          statusMsg.innerText = data.message || "El código no coincide con la nómina de Sheets.";
+          statusMsg.innerText = data.message || "El código no coincide con la lista.";
         }
       } catch (err) {
         emitBeep(false);
         resultCard.className = "result-card error";
-        badgeStatus.innerText = "ERROR DE CONEXIÓN";
-        studentName.innerText = "Fallo de comunicación";
+        badgeStatus.innerText = "FALLO DE COMUNICACIÓN";
+        studentName.innerText = "Error de conexión";
         scoreWrapper.style.display = "none";
-        statusMsg.innerText = "Revisa tu conexión a internet o la URL del Apps Script.";
+        statusMsg.innerText = "Verifica permisos en Apps Script (acceso: Cualquier usuario).";
+        console.error("Detalle del fallo fetch:", err);
       }
 
       setTimeout(() => {
@@ -459,7 +459,7 @@
       }, 2500);
     }
 
-    // Inicialización del lector con cámara trasera
+    // Inicialización de la cámara trasera
     const scanner = new Html5Qrcode("reader");
     scanner.start(
       { facingMode: "environment" },
@@ -468,7 +468,7 @@
       () => {}
     ).catch(err => {
       console.error("Error al iniciar cámara:", err);
-      statusMsg.innerText = "Permiso de cámara denegado o requiere conexión segura HTTPS.";
+      statusMsg.innerText = "Permiso de cámara denegado o requiere conexión HTTPS.";
     });
   </script>
 </body>
