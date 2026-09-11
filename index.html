@@ -50,13 +50,13 @@
       gap: 1rem;
     }
 
-    /* ENCABEZADO CON INSIGNIAS */
+    /* ENCABEZADO INSTITUCIONAL */
     header {
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: 1rem 0.8rem;
+      padding: 1.1rem 0.9rem;
       background: rgba(19, 27, 46, 0.9);
       border: 1px solid var(--card-border);
       border-radius: 20px;
@@ -97,73 +97,50 @@
     }
 
     .title-area h1 {
-      font-size: 1.18rem;
+      font-size: 1.2rem;
       font-weight: 800;
       letter-spacing: 0.5px;
       text-transform: uppercase;
       background: linear-gradient(to right, #ffffff, var(--gold-light));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      user-select: none;
     }
 
     .title-area .sub-label {
-      font-size: 0.76rem;
+      font-size: 0.78rem;
       font-weight: 700;
       color: var(--gold-primary);
       margin-top: 2px;
       letter-spacing: 0.5px;
     }
 
-    /* CONFIGURACIÓN */
-    .config-box {
-      background: rgba(19, 27, 46, 0.6);
-      border: 1px dashed var(--card-border);
+    /* CRÉDITOS PRINCIPALES DEBAJO DEL TÍTULO */
+    .credits-badge {
+      margin-top: 0.85rem;
+      padding: 0.65rem 0.9rem;
+      background: rgba(9, 13, 22, 0.65);
+      border: 1px solid rgba(245, 158, 11, 0.25);
       border-radius: 12px;
-      padding: 0.6rem 0.8rem;
-      font-size: 0.8rem;
-    }
-
-    .config-box summary {
-      cursor: pointer;
-      color: var(--text-muted);
-      font-weight: 600;
-      outline: none;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .config-content {
-      margin-top: 0.6rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-
-    .config-content input {
+      line-height: 1.45;
       width: 100%;
-      background: #090d16;
-      border: 1px solid var(--card-border);
-      color: #fff;
-      padding: 0.55rem;
-      border-radius: 8px;
-      font-size: 0.75rem;
     }
 
-    .btn-save {
-      background: var(--gold-primary);
-      color: #000;
-      border: none;
-      padding: 0.5rem;
-      border-radius: 8px;
+    .credits-badge .author {
+      font-size: 0.82rem;
       font-weight: 700;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: filter 0.2s;
+      color: var(--gold-light);
     }
 
-    .btn-save:hover {
-      filter: brightness(1.1);
+    .credits-badge .role {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .credits-badge .institution {
+      font-size: 0.72rem;
+      color: var(--text-muted);
     }
 
     /* SCANNER */
@@ -290,37 +267,13 @@
       border-radius: 8px;
       border-left: 3px solid var(--gold-primary);
     }
-
-    /* PIE DE PÁGINA */
-    footer {
-      text-align: center;
-      padding: 0.75rem 0.5rem 0.25rem 0.5rem;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    footer .author {
-      font-weight: 700;
-      color: var(--gold-light);
-    }
-
-    footer .role {
-      color: #cbd5e1;
-      font-weight: 600;
-    }
-
-    footer .institution {
-      color: #94a3b8;
-      font-size: 0.7rem;
-    }
   </style>
 </head>
 <body>
 
   <div class="main-wrapper">
-    <!-- Encabezado con los dos Escudos Reales -->
     <header>
+      <!-- Logotipos Oficiales -->
       <div class="header-logos">
         <div class="logo-img-wrapper" title="I.E.S. Micaela Bastidas">
           <img src="logo-colegio.png" alt="Escudo IES Micaela Bastidas" onerror="this.src='ChatGPT Image 12 mar 2026, 18_47_30.png'">
@@ -329,21 +282,21 @@
           <img src="logo-innovacion.png" alt="Área de Innovación MIBAS" onerror="this.src='AI_Plateado_3D-removebg-preview.jpg'">
         </div>
       </div>
+
+      <!-- Título del Proyecto -->
       <div class="title-area">
         <h2 class="inst-name">I.E.S. Micaela Bastidas — Yunguyo</h2>
-        <h1>Control de Participación</h1>
+        <h1 id="appTitle">Control de Participación</h1>
         <div class="sub-label">SISTEMA DE PUNTOS ACADÉMICOS QR</div>
       </div>
-    </header>
 
-    <!-- Conexión a Google Sheets (Apps Script) -->
-    <details class="config-box">
-      <summary><i class="fa-solid fa-sliders"></i> Servidor Google Sheets (Apps Script)</summary>
-      <div class="config-content">
-        <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec" />
-        <button class="btn-save" id="btnSave"><i class="fa-solid fa-floppy-disk"></i> Guardar Conexión</button>
+      <!-- Bloque de Créditos Institucionales -->
+      <div class="credits-badge">
+        <div class="author">Desarrollado por: Ing. Jose El Justo Ortega Serruto</div>
+        <div class="role">Profesor de Innovación Pedagógica — Área de Innovación</div>
+        <div class="institution">I.E.S. Micaela Bastidas — Yunguyo</div>
       </div>
-    </details>
+    </header>
 
     <!-- Visor de la Cámara -->
     <div class="scanner-card">
@@ -372,29 +325,26 @@
         <li style="color: var(--text-muted); text-align: center; font-style: italic;">Sin registros recientes</li>
       </ul>
     </div>
-
-    <!-- Créditos y Designación Oficial -->
-    <footer>
-      Desarrollado por: <span class="author">Ing. Jose El Justo Ortega Serruto</span><br>
-      <span class="role">Profesor de Innovación Pedagógica — Área de Innovación</span><br>
-      <span class="institution">I.E.S. Micaela Bastidas — Yunguyo</span>
-    </footer>
   </div>
 
   <script>
+    // =========================================================================
+    // CONFIGURACIÓN DE CONEXIÓN CON GOOGLE SHEETS
+    // Pega aquí directamente la URL de tu Web App de Apps Script:
+    // =========================================================================
+    const DEFAULT_SCRIPT_URL = "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT";
+    
     const STORAGE_KEY = "url_asistencia_estudiantes_puntos";
-    let scriptUrl = localStorage.getItem(STORAGE_KEY) || "";
+    let scriptUrl = localStorage.getItem(STORAGE_KEY) || DEFAULT_SCRIPT_URL;
 
-    const inputUrl = document.getElementById("scriptUrl");
-    const btnSave = document.getElementById("btnSave");
-    if (scriptUrl) inputUrl.value = scriptUrl;
-
-    btnSave.addEventListener("click", () => {
-      const val = inputUrl.value.trim();
-      if (val) {
-        localStorage.setItem(STORAGE_KEY, val);
-        scriptUrl = val;
-        alert("Enlace con Google Sheets guardado correctamente.");
+    // Atajo: Si necesitas cambiar o pegar la URL desde el celular sin editar código,
+    // haz DOBLE CLIC o DOBLE TOQUE sobre el título "Control de Participación"
+    document.getElementById("appTitle").addEventListener("dblclick", () => {
+      const nuevaUrl = prompt("Ingresa la URL de tu Google Apps Script:", scriptUrl);
+      if (nuevaUrl && nuevaUrl.trim() !== "") {
+        scriptUrl = nuevaUrl.trim();
+        localStorage.setItem(STORAGE_KEY, scriptUrl);
+        alert("Enlace actualizado exitosamente.");
       }
     });
 
@@ -409,7 +359,7 @@
 
     let isCooldown = false;
 
-    // Sonido nativo de retroalimentación
+    // Sonido nativo de confirmación
     function emitBeep(success = true) {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -449,15 +399,15 @@
       if (isCooldown) return;
       isCooldown = true;
 
-      if (!scriptUrl) {
-        alert("Configura primero la URL del Web App de Apps Script en el panel superior.");
+      if (!scriptUrl || scriptUrl === "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT") {
+        alert("Falta configurar la URL de Apps Script. Haz doble clic en el título de la página para ingresarla.");
         isCooldown = false;
         return;
       }
 
       if (navigator.vibrate) navigator.vibrate(80);
 
-      // Estado de procesamiento
+      // Estado de carga
       resultCard.className = "result-card";
       badgeStatus.innerText = "PROCESANDO";
       studentName.innerText = "Registrando punto...";
@@ -482,7 +432,7 @@
           studentName.innerText = data.nombre;
           totalPoints.innerText = data.totalPuntos;
           scoreWrapper.style.display = "block";
-          statusMsg.innerText = "Guardado con éxito en Google Sheets";
+          statusMsg.innerText = "Punto sumado con éxito en Google Sheets";
 
           addHistoryRow(data.nombre, data.totalPuntos);
         } else {
@@ -509,7 +459,7 @@
       }, 2500);
     }
 
-    // Inicialización del lector
+    // Inicialización del lector con cámara trasera
     const scanner = new Html5Qrcode("reader");
     scanner.start(
       { facingMode: "environment" },
@@ -518,7 +468,7 @@
       () => {}
     ).catch(err => {
       console.error("Error al iniciar cámara:", err);
-      statusMsg.innerText = "Permiso de cámara no concedido o requiere HTTPS.";
+      statusMsg.innerText = "Permiso de cámara denegado o requiere conexión segura HTTPS.";
     });
   </script>
 </body>
