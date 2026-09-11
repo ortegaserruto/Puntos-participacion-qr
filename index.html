@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sistema de Puntos y Participación Estudiantil</title>
-  <!-- Librería del lector de QR -->
+  <title>Sistema de Puntos y Participación - I.E.S. Micaela Bastidas</title>
+  <!-- Librería del lector QR -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-  <!-- Iconos Lucide -->
+  <!-- Iconos FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
     :root {
-      --bg-dark: #0f172a;
-      --card-bg: #1e293b;
-      --card-border: #334155;
+      --bg-dark: #090d16;
+      --card-bg: #131b2e;
+      --card-border: #1e293b;
+      --accent-red: #dc2626;
+      --accent-blue: #2563eb;
       --gold-primary: #f59e0b;
       --gold-light: #fbbf24;
-      --gold-dark: #b45309;
       --gold-glow: rgba(245, 158, 11, 0.25);
       --success: #10b981;
       --error: #ef4444;
@@ -32,7 +33,7 @@
     }
 
     body {
-      background: radial-gradient(circle at top, #1e293b 0%, #0b0f19 100%);
+      background: radial-gradient(circle at top, #1e2238 0%, #080c14 100%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -55,37 +56,54 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: 0.8rem;
-      background: rgba(30, 41, 59, 0.7);
+      padding: 1rem 0.8rem;
+      background: rgba(19, 27, 46, 0.85);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      border-radius: 18px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 
     .header-logos {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 1.2rem;
+      gap: 1rem;
       margin-bottom: 0.6rem;
     }
 
     .logo-badge {
-      width: 50px;
-      height: 50px;
-      background: linear-gradient(135deg, var(--gold-dark), var(--gold-light));
+      width: 48px;
+      height: 48px;
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.6rem;
-      color: #000;
-      box-shadow: 0 0 15px var(--gold-glow);
+      font-size: 1.4rem;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+
+    .logo-badge.institution {
+      background: linear-gradient(135deg, #b91c1c, #dc2626);
+      color: #fff;
+    }
+
+    .logo-badge.area {
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+      color: #fff;
+    }
+
+    .title-area h2.inst-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
     }
 
     .title-area h1 {
-      font-size: 1.15rem;
+      font-size: 1.18rem;
       font-weight: 800;
       letter-spacing: 0.5px;
       text-transform: uppercase;
@@ -94,17 +112,17 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .title-area h2 {
-      font-size: 0.82rem;
+    .title-area .sub-label {
+      font-size: 0.78rem;
       font-weight: 600;
       color: var(--gold-primary);
       margin-top: 2px;
       letter-spacing: 0.5px;
     }
 
-    /* CONFIGURACIÓN COLAPSABLE */
+    /* CONFIGURACIÓN */
     .config-box {
-      background: rgba(30, 41, 59, 0.4);
+      background: rgba(19, 27, 46, 0.5);
       border: 1px dashed var(--card-border);
       border-radius: 12px;
       padding: 0.6rem 0.8rem;
@@ -130,10 +148,10 @@
 
     .config-content input {
       width: 100%;
-      background: #0b0f19;
+      background: #090d16;
       border: 1px solid var(--card-border);
       color: #fff;
-      padding: 0.5rem;
+      padding: 0.55rem;
       border-radius: 8px;
       font-size: 0.75rem;
     }
@@ -142,21 +160,25 @@
       background: var(--gold-primary);
       color: #000;
       border: none;
-      padding: 0.45rem;
+      padding: 0.5rem;
       border-radius: 8px;
       font-weight: 700;
       font-size: 0.75rem;
       cursor: pointer;
+      transition: filter 0.2s;
     }
 
-    /* SCANNER CONTAINER */
+    .btn-save:hover {
+      filter: brightness(1.1);
+    }
+
+    /* SCANNER */
     .scanner-card {
-      background: var(--card-bg);
+      background: #000;
       border: 2px solid var(--card-border);
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-      position: relative;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
     }
 
     #reader {
@@ -167,12 +189,12 @@
 
     /* TARJETA DE RESULTADO */
     .result-card {
-      background: rgba(30, 41, 59, 0.85);
+      background: rgba(19, 27, 46, 0.9);
       border: 1px solid var(--card-border);
       border-radius: 18px;
       padding: 1.2rem;
       text-align: center;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(8px);
       transition: all 0.3s ease;
       min-height: 140px;
@@ -184,14 +206,14 @@
 
     .result-card.success {
       border-color: var(--success);
-      background: rgba(16, 185, 129, 0.1);
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.12);
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
     }
 
     .result-card.error {
       border-color: var(--error);
-      background: rgba(239, 68, 68, 0.1);
-      box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.12);
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
     }
 
     .badge-status {
@@ -199,7 +221,7 @@
       font-weight: 800;
       letter-spacing: 1px;
       text-transform: uppercase;
-      padding: 0.2rem 0.8rem;
+      padding: 0.25rem 0.8rem;
       border-radius: 12px;
       background: rgba(255, 255, 255, 0.08);
       color: var(--text-muted);
@@ -210,7 +232,7 @@
       font-size: 1.25rem;
       font-weight: 800;
       color: #fff;
-      line-height: 1.2;
+      line-height: 1.25;
       margin: 0.2rem 0;
     }
 
@@ -218,25 +240,25 @@
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+      background: linear-gradient(135deg, #d97706, #f59e0b);
       color: #000;
       font-weight: 800;
       font-size: 0.95rem;
-      padding: 0.35rem 1.1rem;
+      padding: 0.4rem 1.2rem;
       border-radius: 20px;
       margin-top: 0.4rem;
-      box-shadow: 0 2px 10px var(--gold-glow);
+      box-shadow: 0 2px 12px var(--gold-glow);
     }
 
     .status-msg {
       font-size: 0.82rem;
       color: var(--text-muted);
-      margin-top: 0.3rem;
+      margin-top: 0.35rem;
     }
 
     /* HISTORIAL RECIENTE */
     .history-card {
-      background: rgba(30, 41, 59, 0.7);
+      background: rgba(19, 27, 46, 0.75);
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 0.9rem 1rem;
@@ -253,7 +275,7 @@
       text-transform: uppercase;
       margin-bottom: 0.6rem;
       border-bottom: 1px solid var(--card-border);
-      padding-bottom: 0.3rem;
+      padding-bottom: 0.35rem;
     }
 
     .history-list {
@@ -261,7 +283,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
-      max-height: 120px;
+      max-height: 125px;
       overflow-y: auto;
     }
 
@@ -269,49 +291,63 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(15, 23, 42, 0.4);
-      padding: 0.4rem 0.6rem;
+      background: rgba(9, 13, 22, 0.5);
+      padding: 0.45rem 0.65rem;
       border-radius: 8px;
+      border-left: 3px solid var(--gold-primary);
     }
 
-    /* FOOTER DE CRÉDITOS */
+    /* FOOTER CON TUS CRÉDITOS Y DESIGNACIÓN */
     footer {
       text-align: center;
-      padding-top: 0.5rem;
+      padding: 0.75rem 0.5rem 0.25rem 0.5rem;
       font-size: 0.75rem;
       color: var(--text-muted);
+      line-height: 1.5;
     }
 
-    footer strong {
+    footer .author {
+      font-weight: 700;
       color: var(--gold-light);
+    }
+
+    footer .role {
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    footer .institution {
+      color: #94a3b8;
+      font-size: 0.7rem;
     }
   </style>
 </head>
 <body>
 
   <div class="main-wrapper">
-    <!-- Encabezado Estilo Institucional -->
+    <!-- Encabezado Institucional -->
     <header>
       <div class="header-logos">
-        <div class="logo-badge">
-          <i class="fa-solid fa-graduation-cap"></i>
+        <div class="logo-badge institution" title="I.E.S. Micaela Bastidas">
+          <i class="fa-solid fa-school"></i>
         </div>
-        <div class="logo-badge" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: #fff;">
-          <i class="fa-solid fa-qrcode"></i>
+        <div class="logo-badge area" title="Área de Innovación">
+          <i class="fa-solid fa-microchip"></i>
         </div>
       </div>
       <div class="title-area">
+        <h2 class="inst-name">I.E.S. Micaela Bastidas - Yunguyo</h2>
         <h1>Control de Participación</h1>
-        <h2>SISTEMA DE PUNTOS ACADÉMICOS</h2>
+        <div class="sub-label">SISTEMA DE PUNTOS ACADÉMICOS QR</div>
       </div>
     </header>
 
-    <!-- Configuración para la URL de Google Sheets -->
+    <!-- Conexión a Google Sheets (Apps Script) -->
     <details class="config-box">
       <summary><i class="fa-solid fa-sliders"></i> Servidor Google Sheets (Apps Script)</summary>
       <div class="config-content">
         <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec" />
-        <button class="btn-save" id="btnSave"><i class="fa-solid fa-floppy-disk"></i> Guardar Enlace</button>
+        <button class="btn-save" id="btnSave"><i class="fa-solid fa-floppy-disk"></i> Guardar Conexión</button>
       </div>
     </details>
 
@@ -320,38 +356,39 @@
       <div id="reader"></div>
     </div>
 
-    <!-- Panel de Estado / Confirmación -->
+    <!-- Panel de Estado y Validación -->
     <div class="result-card" id="resultCard">
       <span class="badge-status" id="badgeStatus">ESPERANDO ESCANEO</span>
       <div class="student-name" id="studentName">Listo para registrar</div>
       <div id="scoreWrapper" style="display: none;">
         <span class="score-badge" id="scoreBadge">
-          <i class="fa-solid fa-star"></i> +1 Punto (<span id="totalPoints">0</span> Pts)
+          <i class="fa-solid fa-star"></i> +1 Punto (<span id="totalPoints">0</span> Pts Totales)
         </span>
       </div>
-      <p class="status-msg" id="statusMsg">Muestra el carnet o fotocheck al lector</p>
+      <p class="status-msg" id="statusMsg">Apunta el carnet del estudiante hacia la cámara</p>
     </div>
 
-    <!-- Registro Rápido -->
+    <!-- Historial de Participaciones de la Sesión -->
     <div class="history-card">
       <div class="history-header">
-        <span>Últimas participaciones</span>
-        <span>Puntaje Total</span>
+        <span>Últimos estudiantes registrados</span>
+        <span>Puntaje</span>
       </div>
       <ul class="history-list" id="historyList">
-        <li style="color: var(--text-muted); text-align: center; font-style: italic;">Sin lecturas recientes</li>
+        <li style="color: var(--text-muted); text-align: center; font-style: italic;">Sin registros recientes</li>
       </ul>
     </div>
 
-    <!-- Pie de página con tus créditos -->
+    <!-- Créditos y Designación Oficial -->
     <footer>
-      Desarrollado para gestión académica<br>
-      <strong>Por el Prof. [Tu Nombre / Crédito Aquí]</strong>
+      Desarrollado por: <span class="author">Ing. Jose El Justo Ortega Serruto</span><br>
+      <span class="role">Profesor de Innovación Pedagógica — Área de Innovación</span><br>
+      <span class="institution">I.E.S. Micaela Bastidas — Yunguyo</span>
     </footer>
   </div>
 
   <script>
-    const STORAGE_KEY = "url_asistencia_estudiantes";
+    const STORAGE_KEY = "url_asistencia_estudiantes_puntos";
     let scriptUrl = localStorage.getItem(STORAGE_KEY) || "";
 
     const inputUrl = document.getElementById("scriptUrl");
@@ -363,11 +400,11 @@
       if (val) {
         localStorage.setItem(STORAGE_KEY, val);
         scriptUrl = val;
-        alert("Enlace con Google Sheets guardado con éxito.");
+        alert("Enlace con Google Sheets guardado correctamente.");
       }
     });
 
-    // Elementos del DOM
+    // Elementos de la interfaz
     const resultCard = document.getElementById("resultCard");
     const badgeStatus = document.getElementById("badgeStatus");
     const studentName = document.getElementById("studentName");
@@ -378,7 +415,7 @@
 
     let isCooldown = false;
 
-    // Emisión de tono sonoro de confirmación nativo
+    // Tono sonoro mediante Web Audio API nativa
     function emitBeep(success = true) {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -388,18 +425,18 @@
         gain.connect(audioCtx.destination);
 
         if (success) {
-          osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Tono agudo
+          osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Tono A5 agudo
           gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
           osc.start();
           osc.stop(audioCtx.currentTime + 0.15);
         } else {
-          osc.frequency.setValueAtTime(260, audioCtx.currentTime); // Tono grave
+          osc.frequency.setValueAtTime(280, audioCtx.currentTime); // Tono grave
           gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
           osc.start();
           osc.stop(audioCtx.currentTime + 0.3);
         }
       } catch (e) {
-        console.warn("Audio Context no disponible", e);
+        console.warn("Audio Context bloqueado o no disponible", e);
       }
     }
 
@@ -419,17 +456,17 @@
       isCooldown = true;
 
       if (!scriptUrl) {
-        alert("Primero despliega la pestaña de configuración y pega la URL de Google Apps Script.");
+        alert("Configura primero la URL del Web App de Apps Script en el panel superior.");
         isCooldown = false;
         return;
       }
 
-      if (navigator.vibrate) navigator.vibrate(70);
+      if (navigator.vibrate) navigator.vibrate(80);
 
-      // Estado en procesamiento
+      // Estado de procesamiento
       resultCard.className = "result-card";
       badgeStatus.innerText = "PROCESANDO";
-      studentName.innerText = "Registrando...";
+      studentName.innerText = "Registrando punto...";
       scoreWrapper.style.display = "none";
       statusMsg.innerText = `Código detectado: ${decodedText}`;
 
@@ -451,27 +488,27 @@
           studentName.innerText = data.nombre;
           totalPoints.innerText = data.totalPuntos;
           scoreWrapper.style.display = "block";
-          statusMsg.innerText = `Participación guardada en Sheets`;
+          statusMsg.innerText = "Guardado con éxito en Google Sheets";
 
           addHistoryRow(data.nombre, data.totalPuntos);
         } else {
           emitBeep(false);
           resultCard.className = "result-card error";
-          badgeStatus.innerText = "NO REGISTRADO";
-          studentName.innerText = "Alumno no encontrado";
+          badgeStatus.innerText = "NO ENCONTRADO";
+          studentName.innerText = "Estudiante no registrado";
           scoreWrapper.style.display = "none";
-          statusMsg.innerText = data.message || "El código QR no coincide con la lista.";
+          statusMsg.innerText = data.message || "El código no coincide con la nómina de Sheets.";
         }
       } catch (err) {
         emitBeep(false);
         resultCard.className = "result-card error";
-        badgeStatus.innerText = "FALLO DE CONEXIÓN";
-        studentName.innerText = "Error de red";
+        badgeStatus.innerText = "ERROR DE CONEXIÓN";
+        studentName.innerText = "Fallo de comunicación";
         scoreWrapper.style.display = "none";
-        statusMsg.innerText = "Verifica tu conexión y el enlace de Apps Script.";
+        statusMsg.innerText = "Revisa tu conexión a internet o la URL del Apps Script.";
       }
 
-      // Espera de 2.5 segundos antes de permitir la siguiente lectura
+      // Tiempo de espera de 2.5 segundos para evitar dobles lecturas involuntarias
       setTimeout(() => {
         isCooldown = false;
         badgeStatus.innerText = "ESPERANDO ESCANEO";
@@ -479,7 +516,7 @@
       }, 2500);
     }
 
-    // Inicio de la cámara
+    // Inicialización del lector con cámara trasera
     const scanner = new Html5Qrcode("reader");
     scanner.start(
       { facingMode: "environment" },
@@ -487,8 +524,8 @@
       onScanSuccess,
       () => {}
     ).catch(err => {
-      console.error(err);
-      statusMsg.innerText = "Permiso de cámara denegado o requiere HTTPS.";
+      console.error("Error al iniciar cámara:", err);
+      statusMsg.innerText = "Permiso de cámara no concedido o requiere HTTPS.";
     });
   </script>
 </body>
