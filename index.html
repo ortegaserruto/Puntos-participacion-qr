@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema de Puntos y Participación Estudiantil</title>
+  <!-- Librería del lector de QR -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <!-- Iconos Lucide -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --gold-primary: #f59e0b;
+      --gold-light: #fbbf24;
+      --gold-dark: #b45309;
+      --gold-glow: rgba(245, 158, 11, 0.25);
+      --success: #10b981;
+      --error: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1e293b 0%, #0b0f19 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 0.8rem 2rem 0.8rem;
+    }
+
+    .main-wrapper {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* ENCABEZADO INSTITUCIONAL */
+    header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0.8rem;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .header-logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .logo-badge {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold-light));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      color: #000;
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    .title-area h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: linear-gradient(to right, #ffffff, var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .title-area h2 {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--gold-primary);
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    /* CONFIGURACIÓN COLAPSABLE */
+    .config-box {
+      background: rgba(30, 41, 59, 0.4);
+      border: 1px dashed var(--card-border);
+      border-radius: 12px;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.8rem;
+    }
+
+    .config-box summary {
+      cursor: pointer;
+      color: var(--text-muted);
+      font-weight: 600;
+      outline: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .config-content {
+      margin-top: 0.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .config-content input {
+      width: 100%;
+      background: #0b0f19;
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+    }
+
+    .btn-save {
+      background: var(--gold-primary);
+      color: #000;
+      border: none;
+      padding: 0.45rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    /* SCANNER CONTAINER */
+    .scanner-card {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+
+    #reader {
+      width: 100%;
+      background: #000;
+      border: none !important;
+    }
+
+    /* TARJETA DE RESULTADO */
+    .result-card {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 1.2rem;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .result-card.success {
+      border-color: var(--success);
+      background: rgba(16, 185, 129, 0.1);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    }
+
+    .result-card.error {
+      border-color: var(--error);
+      background: rgba(239, 68, 68, 0.1);
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+    }
+
+    .badge-status {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 0.2rem 0.8rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .student-name {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+      margin: 0.2rem 0;
+    }
+
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+      color: #000;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 0.35rem 1.1rem;
+      border-radius: 20px;
+      margin-top: 0.4rem;
+      box-shadow: 0 2px 10px var(--gold-glow);
+    }
+
+    .status-msg {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    /* HISTORIAL RECIENTE */
+    .history-card {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 0.9rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0.3rem;
+    }
+
+    .history-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.4);
+      padding: 0.4rem 0.6rem;
+      border-radius: 8px;
+    }
+
+    /* FOOTER DE CRÉDITOS */
+    footer {
+      text-align: center;
+      padding-top: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    footer strong {
+      color: var(--gold-light);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-wrapper">
+    <!-- Encabezado Estilo Institucional -->
+    <header>
+      <div class="header-logos">
+        <div class="logo-badge">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="logo-badge" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: #fff;">
+          <i class="fa-solid fa-qrcode"></i>
+        </div>
+      </div>
+      <div class="title-area">
+        <h1>Control de Participación</h1>
+        <h2>SISTEMA DE PUNTOS ACADÉMICOS</h2>
+      </div>
+    </header>
+
+    <!-- Configuración para la URL de Google Sheets -->
+    <details class="config-box">
+      <summary><i class="fa-solid fa-sliders"></i> Servidor Google Sheets (Apps Script)</summary>
+      <div class="config-content">
+        <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec" />
+        <button class="btn-save" id="btnSave"><i class="fa-solid fa-floppy-disk"></i> Guardar Enlace</button>
+      </div>
+    </details>
+
+    <!-- Visor de la Cámara -->
+    <div class="scanner-card">
+      <div id="reader"></div>
+    </div>
+
+    <!-- Panel de Estado / Confirmación -->
+    <div class="result-card" id="resultCard">
+      <span class="badge-status" id="badgeStatus">ESPERANDO ESCANEO</span>
+      <div class="student-name" id="studentName">Listo para registrar</div>
+      <div id="scoreWrapper" style="display: none;">
+        <span class="score-badge" id="scoreBadge">
+          <i class="fa-solid fa-star"></i> +1 Punto (<span id="totalPoints">0</span> Pts)
+        </span>
+      </div>
+      <p class="status-msg" id="statusMsg">Muestra el carnet o fotocheck al lector</p>
+    </div>
+
+    <!-- Registro Rápido -->
+    <div class="history-card">
+      <div class="history-header">
+        <span>Últimas participaciones</span>
+        <span>Puntaje Total</span>
+      </div>
+      <ul class="history-list" id="historyList">
+        <li style="color: var(--text-muted); text-align: center; font-style: italic;">Sin lecturas recientes</li>
+      </ul>
+    </div>
+
+    <!-- Pie de página con tus créditos -->
+    <footer>
+      Desarrollado para gestión académica<br>
+      <strong>Por el Prof. [Tu Nombre / Crédito Aquí]</strong>
+    </footer>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "url_asistencia_estudiantes";
+    let scriptUrl = localStorage.getItem(STORAGE_KEY) || "";
+
+    const inputUrl = document.getElementById("scriptUrl");
+    const btnSave = document.getElementById("btnSave");
+    if (scriptUrl) inputUrl.value = scriptUrl;
+
+    btnSave.addEventListener("click", () => {
+      const val = inputUrl.value.trim();
+      if (val) {
+        localStorage.setItem(STORAGE_KEY, val);
+        scriptUrl = val;
+        alert("Enlace con Google Sheets guardado con éxito.");
+      }
+    });
+
+    // Elementos del DOM
+    const resultCard = document.getElementById("resultCard");
+    const badgeStatus = document.getElementById("badgeStatus");
+    const studentName = document.getElementById("studentName");
+    const scoreWrapper = document.getElementById("scoreWrapper");
+    const totalPoints = document.getElementById("totalPoints");
+    const statusMsg = document.getElementById("statusMsg");
+    const historyList = document.getElementById("historyList");
+
+    let isCooldown = false;
+
+    // Emisión de tono sonoro de confirmación nativo
+    function emitBeep(success = true) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (success) {
+          osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Tono agudo
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.15);
+        } else {
+          osc.frequency.setValueAtTime(260, audioCtx.currentTime); // Tono grave
+          gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.3);
+        }
+      } catch (e) {
+        console.warn("Audio Context no disponible", e);
+      }
+    }
+
+    function addHistoryRow(name, total) {
+      if (historyList.children.length === 1 && historyList.children[0].style.fontStyle === "italic") {
+        historyList.innerHTML = "";
+      }
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const li = document.createElement("li");
+      li.className = "history-item";
+      li.innerHTML = `<span><strong>${name}</strong> <small style="color: var(--text-muted)">(${time})</small></span> <span style="font-weight: 800; color: var(--gold-light);">${total} pts</span>`;
+      historyList.prepend(li);
+    }
+
+    async function onScanSuccess(decodedText) {
+      if (isCooldown) return;
+      isCooldown = true;
+
+      if (!scriptUrl) {
+        alert("Primero despliega la pestaña de configuración y pega la URL de Google Apps Script.");
+        isCooldown = false;
+        return;
+      }
+
+      if (navigator.vibrate) navigator.vibrate(70);
+
+      // Estado en procesamiento
+      resultCard.className = "result-card";
+      badgeStatus.innerText = "PROCESANDO";
+      studentName.innerText = "Registrando...";
+      scoreWrapper.style.display = "none";
+      statusMsg.innerText = `Código detectado: ${decodedText}`;
+
+      try {
+        const res = await fetch(scriptUrl, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ codigo: decodedText })
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+          emitBeep(true);
+          if (navigator.vibrate) navigator.vibrate([60, 40, 80]);
+
+          resultCard.className = "result-card success";
+          badgeStatus.innerText = "¡PARTICIPACIÓN SUMADA!";
+          studentName.innerText = data.nombre;
+          totalPoints.innerText = data.totalPuntos;
+          scoreWrapper.style.display = "block";
+          statusMsg.innerText = `Participación guardada en Sheets`;
+
+          addHistoryRow(data.nombre, data.totalPuntos);
+        } else {
+          emitBeep(false);
+          resultCard.className = "result-card error";
+          badgeStatus.innerText = "NO REGISTRADO";
+          studentName.innerText = "Alumno no encontrado";
+          scoreWrapper.style.display = "none";
+          statusMsg.innerText = data.message || "El código QR no coincide con la lista.";
+        }
+      } catch (err) {
+        emitBeep(false);
+        resultCard.className = "result-card error";
+        badgeStatus.innerText = "FALLO DE CONEXIÓN";
+        studentName.innerText = "Error de red";
+        scoreWrapper.style.display = "none";
+        statusMsg.innerText = "Verifica tu conexión y el enlace de Apps Script.";
+      }
+
+      // Espera de 2.5 segundos antes de permitir la siguiente lectura
+      setTimeout(() => {
+        isCooldown = false;
+        badgeStatus.innerText = "ESPERANDO ESCANEO";
+        statusMsg.innerText = "Listo para el siguiente estudiante...";
+      }, 2500);
+    }
+
+    // Inicio de la cámara
+    const scanner = new Html5Qrcode("reader");
+    scanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 },
+      onScanSuccess,
+      () => {}
+    ).catch(err => {
+      console.error(err);
+      statusMsg.innerText = "Permiso de cámara denegado o requiere HTTPS.";
+    });
+  </script>
+</body>
+</html>
