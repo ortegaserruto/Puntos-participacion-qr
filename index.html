@@ -33,7 +33,7 @@
     }
 
     body {
-      background: radial-gradient(circle at top, #1e2238 0%, #080c14 100%);
+      background: radial-gradient(circle at top, #1a2035 0%, #070a12 100%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -50,51 +50,45 @@
       gap: 1rem;
     }
 
-    /* ENCABEZADO INSTITUCIONAL */
+    /* ENCABEZADO CON INSIGNIAS */
     header {
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       padding: 1rem 0.8rem;
-      background: rgba(19, 27, 46, 0.85);
+      background: rgba(19, 27, 46, 0.9);
       border: 1px solid var(--card-border);
-      border-radius: 18px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      border-radius: 20px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
     }
 
     .header-logos {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 1rem;
-      margin-bottom: 0.6rem;
+      gap: 1.25rem;
+      margin-bottom: 0.75rem;
     }
 
-    .logo-badge {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
+    .logo-img-wrapper {
+      width: 60px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.4rem;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
     }
 
-    .logo-badge.institution {
-      background: linear-gradient(135deg, #b91c1c, #dc2626);
-      color: #fff;
-    }
-
-    .logo-badge.area {
-      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
-      color: #fff;
+    .logo-img-wrapper img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
     }
 
     .title-area h2.inst-name {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
       color: var(--text-muted);
       letter-spacing: 1px;
@@ -113,8 +107,8 @@
     }
 
     .title-area .sub-label {
-      font-size: 0.78rem;
-      font-weight: 600;
+      font-size: 0.76rem;
+      font-weight: 700;
       color: var(--gold-primary);
       margin-top: 2px;
       letter-spacing: 0.5px;
@@ -122,7 +116,7 @@
 
     /* CONFIGURACIÓN */
     .config-box {
-      background: rgba(19, 27, 46, 0.5);
+      background: rgba(19, 27, 46, 0.6);
       border: 1px dashed var(--card-border);
       border-radius: 12px;
       padding: 0.6rem 0.8rem;
@@ -297,7 +291,7 @@
       border-left: 3px solid var(--gold-primary);
     }
 
-    /* FOOTER CON TUS CRÉDITOS Y DESIGNACIÓN */
+    /* PIE DE PÁGINA */
     footer {
       text-align: center;
       padding: 0.75rem 0.5rem 0.25rem 0.5rem;
@@ -325,18 +319,18 @@
 <body>
 
   <div class="main-wrapper">
-    <!-- Encabezado Institucional -->
+    <!-- Encabezado con los dos Escudos Reales -->
     <header>
       <div class="header-logos">
-        <div class="logo-badge institution" title="I.E.S. Micaela Bastidas">
-          <i class="fa-solid fa-school"></i>
+        <div class="logo-img-wrapper" title="I.E.S. Micaela Bastidas">
+          <img src="logo-colegio.png" alt="Escudo IES Micaela Bastidas" onerror="this.src='ChatGPT Image 12 mar 2026, 18_47_30.png'">
         </div>
-        <div class="logo-badge area" title="Área de Innovación">
-          <i class="fa-solid fa-microchip"></i>
+        <div class="logo-img-wrapper" title="Área de Innovación MIBAS">
+          <img src="logo-innovacion.png" alt="Área de Innovación MIBAS" onerror="this.src='AI_Plateado_3D-removebg-preview.jpg'">
         </div>
       </div>
       <div class="title-area">
-        <h2 class="inst-name">I.E.S. Micaela Bastidas - Yunguyo</h2>
+        <h2 class="inst-name">I.E.S. Micaela Bastidas — Yunguyo</h2>
         <h1>Control de Participación</h1>
         <div class="sub-label">SISTEMA DE PUNTOS ACADÉMICOS QR</div>
       </div>
@@ -368,7 +362,7 @@
       <p class="status-msg" id="statusMsg">Apunta el carnet del estudiante hacia la cámara</p>
     </div>
 
-    <!-- Historial de Participaciones de la Sesión -->
+    <!-- Historial de Participaciones -->
     <div class="history-card">
       <div class="history-header">
         <span>Últimos estudiantes registrados</span>
@@ -415,7 +409,7 @@
 
     let isCooldown = false;
 
-    // Tono sonoro mediante Web Audio API nativa
+    // Sonido nativo de retroalimentación
     function emitBeep(success = true) {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -425,12 +419,12 @@
         gain.connect(audioCtx.destination);
 
         if (success) {
-          osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Tono A5 agudo
+          osc.frequency.setValueAtTime(880, audioCtx.currentTime);
           gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
           osc.start();
           osc.stop(audioCtx.currentTime + 0.15);
         } else {
-          osc.frequency.setValueAtTime(280, audioCtx.currentTime); // Tono grave
+          osc.frequency.setValueAtTime(280, audioCtx.currentTime);
           gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
           osc.start();
           osc.stop(audioCtx.currentTime + 0.3);
@@ -508,7 +502,6 @@
         statusMsg.innerText = "Revisa tu conexión a internet o la URL del Apps Script.";
       }
 
-      // Tiempo de espera de 2.5 segundos para evitar dobles lecturas involuntarias
       setTimeout(() => {
         isCooldown = false;
         badgeStatus.innerText = "ESPERANDO ESCANEO";
@@ -516,7 +509,7 @@
       }, 2500);
     }
 
-    // Inicialización del lector con cámara trasera
+    // Inicialización del lector
     const scanner = new Html5Qrcode("reader");
     scanner.start(
       { facingMode: "environment" },
