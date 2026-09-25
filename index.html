@@ -1,367 +1,476 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generador Multisección de Carnets QR - I.E.S. Micaela Bastidas</title>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema de Puntos y Participación - I.E.S. Micaela Bastidas</title>
+  <!-- Lector QR optimizado -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <!-- Iconos FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
     :root {
-      --primary: #1e293b;
-      --gold: #f59e0b;
-      --border-color: #cbd5e1;
+      --bg-dark: #090d16;
+      --card-bg: #131b2e;
+      --card-border: #1e293b;
+      --gold-primary: #f59e0b;
+      --gold-light: #fbbf24;
+      --gold-glow: rgba(245, 158, 11, 0.25);
+      --success: #10b981;
+      --error: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
 
     body {
-      background: #f1f5f9;
-      color: #0f172a;
-      padding: 1rem;
-    }
-
-    .no-print-panel {
-      max-width: 820px;
-      margin: 0 auto 1.5rem auto;
-      background: #fff;
-      padding: 1.25rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-      border: 1px solid var(--border-color);
-    }
-
-    .no-print-panel h2 {
-      font-size: 1.2rem;
-      color: var(--primary);
-      margin-bottom: 0.4rem;
-    }
-
-    .controls-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 1rem;
-      align-items: center;
-    }
-
-    select, input[type="file"] {
-      padding: 0.5rem;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      font-size: 0.85rem;
-    }
-
-    .btn-print {
-      background: #16a34a;
-      color: #fff;
-      border: none;
-      padding: 0.65rem 1.4rem;
-      font-size: 0.95rem;
-      font-weight: 700;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .btn-print:disabled {
-      background: #94a3b8;
-      cursor: not-allowed;
-    }
-
-    /* CONTENEDOR A4 */
-    #printArea {
+      background: radial-gradient(circle at top, #1a2035 0%, #070a12 100%);
+      color: var(--text-main);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 15mm;
+      padding: 0.8rem 0.8rem 1.5rem 0.8rem;
     }
 
-    .a4-page {
-      width: 210mm;
-      min-height: 297mm;
-      background: #fff;
-      padding: 8mm;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-auto-rows: 64mm;
-      gap: 5mm;
-      box-shadow: 0 0 10px rgba(0,0,0,0.15);
-      page-break-after: always;
+    .main-wrapper {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
     }
 
-    /* CARNET */
-    .student-card {
-      border: 1.5px dashed #64748b;
-      border-radius: 8px;
-      padding: 6px;
+    /* ENCABEZADO INSTITUCIONAL */
+    header {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
       text-align: center;
-      background: #ffffff;
-      overflow: hidden;
+      padding: 0.9rem 0.8rem;
+      background: rgba(19, 27, 46, 0.9);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
     }
 
-    .card-header {
-      width: 100%;
-      border-bottom: 2px solid var(--gold);
-      padding-bottom: 2px;
-    }
-
-    .card-inst {
-      font-size: 7.5pt;
-      font-weight: 800;
-      color: #b91c1c;
-      text-transform: uppercase;
-      line-height: 1.1;
-    }
-
-    .card-sub {
-      font-size: 6pt;
-      font-weight: 700;
-      color: #1e3a8a;
-      text-transform: uppercase;
-    }
-
-    .card-body {
+    .header-logos {
       display: flex;
-      width: 100%;
       align-items: center;
-      justify-content: space-around;
-      gap: 4px;
-      margin: auto 0;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-bottom: 0.6rem;
     }
 
-    .qr-box {
-      width: 95px;
-      height: 95px;
+    .logo-img-wrapper {
+      width: 54px;
+      height: 54px;
       display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+    }
+
+    .logo-img-wrapper img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .title-area h2.inst-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .title-area h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: linear-gradient(to right, #ffffff, var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      user-select: none;
+    }
+
+    .title-area .sub-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    /* BLOQUE DE CRÉDITOS */
+    .credits-badge {
+      margin-top: 0.7rem;
+      padding: 0.55rem 0.8rem;
+      background: rgba(9, 13, 22, 0.65);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 10px;
+      line-height: 1.4;
+      width: 100%;
+    }
+
+    .credits-badge .author {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--gold-light);
+    }
+
+    .credits-badge .role {
+      font-size: 0.74rem;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+
+    .credits-badge .institution {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* SCANNER */
+    .scanner-card {
+      background: #000;
+      border: 2px solid var(--card-border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    #reader {
+      width: 100%;
+      background: #000;
+      border: none !important;
+    }
+
+    /* TARJETA DE RESULTADO */
+    .result-card {
+      background: rgba(19, 27, 46, 0.9);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      transition: all 0.25s ease;
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
     }
 
-    .qr-box img {
-      width: 100% !important;
-      height: 100% !important;
+    .result-card.success {
+      border-color: var(--success);
+      background: rgba(16, 185, 129, 0.14);
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
     }
 
-    .card-info {
-      display: flex;
-      flex-direction: column;
-      text-align: left;
-      max-width: 48%;
+    .result-card.error {
+      border-color: var(--error);
+      background: rgba(239, 68, 68, 0.14);
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
     }
 
-    .student-code {
-      font-size: 8pt;
+    .badge-status {
+      font-size: 0.68rem;
       font-weight: 800;
-      color: #0f172a;
-    }
-
-    .student-grade {
-      font-size: 7.5pt;
-      font-weight: 700;
-      color: #b45309;
-    }
-
-    .card-footer {
-      width: 100%;
-      background: #0f172a;
-      color: #fff;
-      border-radius: 4px;
-      padding: 3px 2px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 0.2rem 0.7rem;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
     }
 
     .student-name {
-      font-size: 7.5pt;
+      font-size: 1.18rem;
       font-weight: 800;
-      text-transform: uppercase;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      color: #fff;
+      line-height: 1.25;
+      margin: 0.15rem 0;
     }
 
-    @media print {
-      body {
-        background: #fff;
-        padding: 0;
-      }
-      .no-print-panel {
-        display: none !important;
-      }
-      #printArea {
-        gap: 0;
-      }
-      .a4-page {
-        box-shadow: none;
-        margin: 0;
-        padding: 8mm 6mm;
-        page-break-after: always;
-      }
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      color: #000;
+      font-weight: 800;
+      font-size: 0.92rem;
+      padding: 0.35rem 1.1rem;
+      border-radius: 20px;
+      margin-top: 0.35rem;
+      box-shadow: 0 2px 12px var(--gold-glow);
+    }
+
+    .status-msg {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    /* HISTORIAL */
+    .history-card {
+      background: rgba(19, 27, 46, 0.75);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 0.8rem 0.9rem;
+      font-size: 0.82rem;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0.3rem;
+    }
+
+    .history-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(9, 13, 22, 0.5);
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      border-left: 3px solid var(--gold-primary);
     }
   </style>
 </head>
 <body>
 
-  <div class="no-print-panel">
-    <h2>Generador de Carnets QR Multisección</h2>
-    <p style="font-size: 0.85rem; color: #475569;">
-      Sube tu Excel con las secciones (Columna A: DNI/Código, Columna B: Apellidos y Nombres, Columna C: Grado y Sección).
-    </p>
-
-    <div class="controls-row">
-      <input type="file" id="excelInput" accept=".xlsx, .xls">
-      
-      <div id="filterWrapper" style="display: none; align-items: center; gap: 0.5rem;">
-        <label for="seccionSelect" style="font-size: 0.85rem; font-weight: 600;">Sección:</label>
-        <select id="seccionSelect"></select>
+  <div class="main-wrapper">
+    <header>
+      <div class="header-logos">
+        <div class="logo-img-wrapper" title="I.E.S. Micaela Bastidas">
+          <img src="logo-colegio.png" alt="Escudo IES Micaela Bastidas" onerror="this.src='ChatGPT Image 12 mar 2026, 18_47_30.png'">
+        </div>
+        <div class="logo-img-wrapper" title="Área de Innovación MIBAS">
+          <img src="logo-innovacion.png" alt="Área de Innovación MIBAS" onerror="this.src='AI_Plateado_3D-removebg-preview.jpg'">
+        </div>
       </div>
 
-      <button id="btnPrint" class="btn-print" disabled onclick="window.print()">
-        🖨️ Imprimir Carnets A4
-      </button>
+      <div class="title-area">
+        <h2 class="inst-name">I.E.S. Micaela Bastidas — Yunguyo</h2>
+        <h1 id="appTitle">Control de Participación</h1>
+        <div class="sub-label">SISTEMA DE PUNTOS ACADÉMICOS QR</div>
+      </div>
+
+      <div class="credits-badge">
+        <div class="author">Desarrollado por: Ing. Jose El Justo Ortega Serruto</div>
+        <div class="role">Profesor de Innovación Pedagógica — Área de Innovación</div>
+        <div class="institution">I.E.S. Micaela Bastidas — Yunguyo</div>
+      </div>
+    </header>
+
+    <div class="scanner-card">
+      <div id="reader"></div>
+    </div>
+
+    <div class="result-card" id="resultCard">
+      <span class="badge-status" id="badgeStatus">ESPERANDO ESCANEO</span>
+      <div class="student-name" id="studentName">Listo para escanear</div>
+      <div id="scoreWrapper" style="display: none;">
+        <span class="score-badge" id="scoreBadge">
+          <i class="fa-solid fa-star"></i> +1 Punto (<span id="totalPoints">0</span> Pts Totales)
+        </span>
+      </div>
+      <p class="status-msg" id="statusMsg">Apunta el carnet frente a la cámara</p>
+    </div>
+
+    <div class="history-card">
+      <div class="history-header">
+        <span>Últimos estudiantes registrados</span>
+        <span>Puntaje</span>
+      </div>
+      <ul class="history-list" id="historyList">
+        <li style="color: var(--text-muted); text-align: center; font-style: italic;">Sin registros recientes</li>
+      </ul>
     </div>
   </div>
 
-  <div id="printArea"></div>
-
   <script>
-    let allStudents = [];
-    const fileInput = document.getElementById('excelInput');
-    const seccionSelect = document.getElementById('seccionSelect');
-    const filterWrapper = document.getElementById('filterWrapper');
-    const btnPrint = document.getElementById('btnPrint');
-    const printArea = document.getElementById('printArea');
+    const STORAGE_KEY = "url_asistencia_estudiantes_puntos";
+    let scriptUrl = localStorage.getItem(STORAGE_KEY) || "";
 
-    fileInput.addEventListener('change', handleFile);
-    seccionSelect.addEventListener('change', () => renderFilteredCards(seccionSelect.value));
+    document.getElementById("appTitle").addEventListener("dblclick", () => {
+      const nuevaUrl = prompt("Ingresa la URL del Web App de Apps Script (debe terminar en /exec):", scriptUrl);
+      if (nuevaUrl && nuevaUrl.trim() !== "") {
+        scriptUrl = nuevaUrl.trim();
+        localStorage.setItem(STORAGE_KEY, scriptUrl);
+        alert("Enlace actualizado exitosamente.");
+      }
+    });
 
-    function handleFile(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+    const resultCard = document.getElementById("resultCard");
+    const badgeStatus = document.getElementById("badgeStatus");
+    const studentName = document.getElementById("studentName");
+    const scoreWrapper = document.getElementById("scoreWrapper");
+    const totalPoints = document.getElementById("totalPoints");
+    const statusMsg = document.getElementById("statusMsg");
+    const historyList = document.getElementById("historyList");
 
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const data = new Uint8Array(evt.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        
-        allStudents = [];
-        const sectionsSet = new Set();
+    let isScanningBlocked = false;
 
-        // Lee todas las pestañas que tenga el archivo
-        workbook.SheetNames.forEach(sheetName => {
-          const worksheet = workbook.Sheets[sheetName];
-          const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    function emitBeep(success = true) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
 
-          for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            if (row && row[0]) {
-              const sec = String(row[2] || sheetName).trim();
-              allStudents.push({
-                codigo: String(row[0]).trim(),
-                nombre: String(row[1] || 'Sin Nombre').trim(),
-                seccion: sec
-              });
-              sectionsSet.add(sec);
-            }
-          }
-        });
-
-        if (allStudents.length === 0) {
-          alert("No se encontraron registros en el Excel.");
-          return;
+        if (success) {
+          osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.12);
+        } else {
+          osc.frequency.setValueAtTime(280, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.25);
         }
-
-        // Cargar opciones de secciones en el selector
-        seccionSelect.innerHTML = '<option value="TODAS">-- Todas las Secciones --</option>';
-        sectionsSet.forEach(sec => {
-          const opt = document.createElement("option");
-          opt.value = sec;
-          opt.textContent = sec;
-          seccionSelect.appendChild(opt);
-        });
-
-        filterWrapper.style.display = "flex";
-        renderFilteredCards("TODAS");
-      };
-      reader.readAsArrayBuffer(file);
+      } catch (e) {}
     }
 
-    function renderFilteredCards(selectedSec) {
-      printArea.innerHTML = "";
-      let filtered = (selectedSec === "TODAS") 
-        ? allStudents 
-        : allStudents.filter(s => s.seccion === selectedSec);
+    function addHistoryRow(name, total) {
+      if (historyList.children.length === 1 && historyList.children[0].style.fontStyle === "italic") {
+        historyList.innerHTML = "";
+      }
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const li = document.createElement("li");
+      li.className = "history-item";
+      li.innerHTML = `<span><strong>${name}</strong> <small style="color: var(--text-muted)">(${time})</small></span> <span style="font-weight: 800; color: var(--gold-light);">${total} pts</span>`;
+      historyList.prepend(li);
+    }
 
-      if (filtered.length === 0) {
-        btnPrint.disabled = true;
+    async function onScanSuccess(decodedText) {
+      if (isScanningBlocked) return;
+      isScanningBlocked = true;
+
+      if (!scriptUrl) {
+        alert("Haz doble clic en el título 'Control de Participación' para ingresar la URL de Google Apps Script.");
+        isScanningBlocked = false;
         return;
       }
 
-      // Agrupar por sección para asegurar que cada sección inicie en una nueva página A4
-      const groups = {};
-      filtered.forEach(s => {
-        if (!groups[s.seccion]) groups[s.seccion] = [];
-        groups[s.seccion].push(s);
-      });
+      if (navigator.vibrate) navigator.vibrate(60);
 
-      const CARDS_PER_PAGE = 12;
-      let cardCounter = 0;
+      // Estado instantáneo de procesamiento
+      resultCard.className = "result-card";
+      badgeStatus.innerText = "PROCESANDO...";
+      studentName.innerText = "Registrando punto...";
+      scoreWrapper.style.display = "none";
+      statusMsg.innerText = `ID: ${decodedText}`;
 
-      Object.keys(groups).forEach(sec => {
-        const studentsInSec = groups[sec];
-        let currentPage = null;
-
-        studentsInSec.forEach((student, index) => {
-          if (index % CARDS_PER_PAGE === 0) {
-            currentPage = document.createElement("div");
-            currentPage.className = "a4-page";
-            printArea.appendChild(currentPage);
-          }
-
-          const card = document.createElement("div");
-          card.className = "student-card";
-          const qrId = `qr_${cardCounter++}`;
-
-          card.innerHTML = `
-            <div class="card-header">
-              <div class="card-inst">I.E.S. Micaela Bastidas</div>
-              <div class="card-sub">Área de Innovación — Participación</div>
-            </div>
-            <div class="card-body">
-              <div class="qr-box" id="${qrId}"></div>
-              <div class="card-info">
-                <span class="student-code">ID: ${student.codigo}</span>
-                <span class="student-grade">${student.seccion}</span>
-              </div>
-            </div>
-            <div class="card-footer">
-              <div class="student-name" title="${student.nombre}">${student.nombre}</div>
-            </div>
-          `;
-
-          currentPage.appendChild(card);
-
-          new QRCode(document.getElementById(qrId), {
-            text: student.codigo,
-            width: 95,
-            height: 95,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.M
-          });
+      try {
+        const res = await fetch(scriptUrl, {
+          method: "POST",
+          mode: "cors",
+          redirect: "follow",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ codigo: decodedText })
         });
-      });
 
-      btnPrint.disabled = false;
+        const data = await res.json();
+
+        if (data.status === "success") {
+          emitBeep(true);
+          if (navigator.vibrate) navigator.vibrate([50, 40, 60]);
+
+          resultCard.className = "result-card success";
+          badgeStatus.innerText = "¡PARTICIPACIÓN SUMADA!";
+          studentName.innerText = data.nombre;
+          totalPoints.innerText = data.totalPuntos;
+          scoreWrapper.style.display = "block";
+          statusMsg.innerText = "Registrado en Google Sheets";
+
+          addHistoryRow(data.nombre, data.totalPuntos);
+        } else {
+          emitBeep(false);
+          resultCard.className = "result-card error";
+          badgeStatus.innerText = "NO ENCONTRADO";
+          studentName.innerText = "Código sin registro";
+          scoreWrapper.style.display = "none";
+          statusMsg.innerText = data.message || "No existe en la hoja Estudiantes.";
+        }
+      } catch (err) {
+        emitBeep(false);
+        resultCard.className = "result-card error";
+        badgeStatus.innerText = "ERROR DE CONEXIÓN";
+        studentName.innerText = "Fallo de respuesta";
+        scoreWrapper.style.display = "none";
+        statusMsg.innerText = "Revisa permisos o tu conexión a internet.";
+      }
+
+      // Tiempo de espera reducido a 1.2 segundos para escaneo ágil
+      setTimeout(() => {
+        isScanningBlocked = false;
+        badgeStatus.innerText = "ESPERANDO ESCANEO";
+        statusMsg.innerText = "Listo para el siguiente estudiante...";
+      }, 1200);
     }
+
+    // Configuración de escaneo a 25 FPS y cálculo de encuadre dinámico
+    const scanner = new Html5Qrcode("reader");
+    
+    function qrBoxFunction(viewfinderWidth, viewfinderHeight) {
+      const minEdgePercentage = 0.72;
+      const minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
+      const qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
+      return {
+        width: qrboxSize,
+        height: qrboxSize
+      };
+    }
+
+    scanner.start(
+      { facingMode: "environment" },
+      {
+        fps: 25, // Mayor fluidez y lectura instantánea
+        qrbox: qrBoxFunction,
+        aspectRatio: 1.0,
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: true // Aceleración nativa por hardware si el móvil lo soporta
+        }
+      },
+      onScanSuccess,
+      () => {}
+    ).catch(err => {
+      console.error("Error al iniciar cámara:", err);
+      statusMsg.innerText = "Permiso de cámara denegado o requiere HTTPS.";
+    });
   </script>
 </body>
 </html>
