@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" /> 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sistema de Puntos y Participación - I.E.S. Micaela Bastidas</title>
-  <!-- Lector QR optimizado -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Control de Participación QR - I.E.S. Micaela Bastidas</title>
+  <!-- Librería QR estable -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-  <!-- Iconos FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
@@ -37,46 +36,41 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 0.8rem 0.8rem 1.5rem 0.8rem;
+      padding: 0.4rem 0.5rem 0.8rem 0.5rem;
     }
 
     .main-wrapper {
       width: 100%;
-      max-width: 440px;
+      max-width: 410px;
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
+      gap: 0.4rem;
     }
 
-    /* ENCABEZADO INSTITUCIONAL */
+    /* ENCABEZADO */
     header {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      text-align: center;
-      padding: 0.9rem 0.8rem;
-      background: rgba(19, 27, 46, 0.9);
+      justify-content: space-between;
+      padding: 0.4rem 0.6rem;
+      background: rgba(19, 27, 46, 0.95);
       border: 1px solid var(--card-border);
-      border-radius: 18px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
     }
 
     .header-logos {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 1.25rem;
-      margin-bottom: 0.6rem;
+      gap: 0.4rem;
     }
 
     .logo-img-wrapper {
-      width: 54px;
-      height: 54px;
+      width: 34px;
+      height: 34px;
       display: flex;
       align-items: center;
       justify-content: center;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
     }
 
     .logo-img-wrapper img {
@@ -85,88 +79,77 @@
       object-fit: contain;
     }
 
-    .title-area h2.inst-name {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-bottom: 2px;
+    .title-area {
+      text-align: right;
     }
 
     .title-area h1 {
-      font-size: 1.15rem;
+      font-size: 0.92rem;
       font-weight: 800;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
       text-transform: uppercase;
       background: linear-gradient(to right, #ffffff, var(--gold-light));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      line-height: 1.1;
       user-select: none;
     }
 
     .title-area .sub-label {
-      font-size: 0.75rem;
+      font-size: 0.64rem;
       font-weight: 700;
       color: var(--gold-primary);
-      margin-top: 2px;
-      letter-spacing: 0.5px;
+      line-height: 1.1;
     }
 
-    /* BLOQUE DE CRÉDITOS */
-    .credits-badge {
-      margin-top: 0.7rem;
-      padding: 0.55rem 0.8rem;
+    /* CRÉDITOS */
+    .credits-bar {
+      text-align: center;
+      font-size: 0.64rem;
+      color: var(--text-muted);
       background: rgba(9, 13, 22, 0.65);
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      border-radius: 10px;
-      line-height: 1.4;
-      width: 100%;
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+      border: 1px solid rgba(245, 158, 11, 0.2);
     }
 
-    .credits-badge .author {
-      font-size: 0.8rem;
-      font-weight: 700;
+    .credits-bar strong {
       color: var(--gold-light);
     }
 
-    .credits-badge .role {
-      font-size: 0.74rem;
-      color: #cbd5e1;
-      font-weight: 600;
-    }
-
-    .credits-badge .institution {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
-
-    /* SCANNER */
+    /* VISOR DE CÁMARA (DIMENSIONADO ÓPTICO ESTABLE) */
     .scanner-card {
       background: #000;
-      border: 2px solid var(--card-border);
-      border-radius: 18px;
+      border: 1.5px solid var(--card-border);
+      border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      height: 200px; /* Altura óptima para no romper el sensor */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     }
 
     #reader {
-      width: 100%;
-      background: #000;
+      width: 100% !important;
       border: none !important;
+    }
+
+    #reader video {
+      height: 200px !important;
+      object-fit: cover !important;
     }
 
     /* TARJETA DE RESULTADO */
     .result-card {
-      background: rgba(19, 27, 46, 0.9);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 1rem;
+      background: rgba(19, 27, 46, 0.95);
+      border: 1.5px solid var(--card-border);
+      border-radius: 12px;
+      padding: 0.45rem 0.6rem;
       text-align: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(8px);
-      transition: all 0.25s ease;
-      min-height: 130px;
+      transition: all 0.2s ease;
+      min-height: 82px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -175,84 +158,87 @@
 
     .result-card.success {
       border-color: var(--success);
-      background: rgba(16, 185, 129, 0.14);
-      box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+      background: rgba(16, 185, 129, 0.16);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
     }
 
     .result-card.error {
       border-color: var(--error);
-      background: rgba(239, 68, 68, 0.14);
-      box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
+      background: rgba(239, 68, 68, 0.16);
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
     }
 
     .badge-status {
-      font-size: 0.68rem;
+      font-size: 0.6rem;
       font-weight: 800;
-      letter-spacing: 1px;
+      letter-spacing: 0.8px;
       text-transform: uppercase;
-      padding: 0.2rem 0.7rem;
-      border-radius: 10px;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
       background: rgba(255, 255, 255, 0.08);
       color: var(--text-muted);
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.15rem;
     }
 
     .student-name {
-      font-size: 1.18rem;
+      font-size: 0.98rem;
       font-weight: 800;
       color: #fff;
-      line-height: 1.25;
-      margin: 0.15rem 0;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
     }
 
     .score-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.25rem;
       background: linear-gradient(135deg, #d97706, #f59e0b);
       color: #000;
       font-weight: 800;
-      font-size: 0.92rem;
-      padding: 0.35rem 1.1rem;
-      border-radius: 20px;
-      margin-top: 0.35rem;
-      box-shadow: 0 2px 12px var(--gold-glow);
+      font-size: 0.8rem;
+      padding: 0.18rem 0.7rem;
+      border-radius: 12px;
+      margin-top: 0.2rem;
+      box-shadow: 0 2px 6px var(--gold-glow);
     }
 
     .status-msg {
-      font-size: 0.8rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
-      margin-top: 0.3rem;
+      margin-top: 0.15rem;
     }
 
     /* HISTORIAL */
     .history-card {
-      background: rgba(19, 27, 46, 0.75);
+      background: rgba(19, 27, 46, 0.8);
       border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 0.8rem 0.9rem;
-      font-size: 0.82rem;
+      border-radius: 10px;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.75rem;
     }
 
     .history-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.72rem;
+      font-size: 0.64rem;
       font-weight: 700;
       color: var(--gold-light);
       text-transform: uppercase;
-      margin-bottom: 0.5rem;
       border-bottom: 1px solid var(--card-border);
-      padding-bottom: 0.3rem;
+      padding-bottom: 0.2rem;
+      margin-bottom: 0.25rem;
     }
 
     .history-list {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
-      max-height: 120px;
+      gap: 0.2rem;
+      max-height: 85px;
       overflow-y: auto;
     }
 
@@ -261,9 +247,10 @@
       justify-content: space-between;
       align-items: center;
       background: rgba(9, 13, 22, 0.5);
-      padding: 0.4rem 0.6rem;
-      border-radius: 6px;
-      border-left: 3px solid var(--gold-primary);
+      padding: 0.25rem 0.45rem;
+      border-radius: 5px;
+      border-left: 2.5px solid var(--gold-primary);
+      font-size: 0.7rem;
     }
   </style>
 </head>
@@ -279,42 +266,41 @@
           <img src="logo-innovacion.png" alt="Área de Innovación MIBAS" onerror="this.src='AI_Plateado_3D-removebg-preview.jpg'">
         </div>
       </div>
-
       <div class="title-area">
-        <h2 class="inst-name">I.E.S. Micaela Bastidas — Yunguyo</h2>
         <h1 id="appTitle">Control de Participación</h1>
-        <div class="sub-label">SISTEMA DE PUNTOS ACADÉMICOS QR</div>
-      </div>
-
-      <div class="credits-badge">
-        <div class="author">Desarrollado por: Ing. Jose El Justo Ortega Serruto</div>
-        <div class="role">Profesor de Innovación Pedagógica — Área de Innovación</div>
-        <div class="institution">I.E.S. Micaela Bastidas — Yunguyo</div>
+        <div class="sub-label">I.E.S. MICAELA BASTIDAS — YUNGUYO</div>
       </div>
     </header>
 
+    <div class="credits-bar">
+      <strong>Ing. Jose El Justo Ortega Serruto</strong> — Profesor de Innovación Pedagógica
+    </div>
+
+    <!-- Visor de cámara estable -->
     <div class="scanner-card">
       <div id="reader"></div>
     </div>
 
+    <!-- Panel de Resultados -->
     <div class="result-card" id="resultCard">
       <span class="badge-status" id="badgeStatus">ESPERANDO ESCANEO</span>
       <div class="student-name" id="studentName">Listo para escanear</div>
       <div id="scoreWrapper" style="display: none;">
         <span class="score-badge" id="scoreBadge">
-          <i class="fa-solid fa-star"></i> +1 Punto (<span id="totalPoints">0</span> Pts Totales)
+          <i class="fa-solid fa-star"></i> +1 Pt (<span id="totalPoints">0</span> Pts Totales)
         </span>
       </div>
-      <p class="status-msg" id="statusMsg">Apunta el carnet frente a la cámara</p>
+      <p class="status-msg" id="statusMsg">Apunta el carnet del estudiante</p>
     </div>
 
+    <!-- Historial -->
     <div class="history-card">
       <div class="history-header">
-        <span>Últimos estudiantes registrados</span>
-        <span>Puntaje</span>
+        <span>Últimas participaciones</span>
+        <span>Puntos</span>
       </div>
       <ul class="history-list" id="historyList">
-        <li style="color: var(--text-muted); text-align: center; font-style: italic;">Sin registros recientes</li>
+        <li style="color: var(--text-muted); text-align: center; font-style: italic; font-size: 0.68rem;">Sin registros</li>
       </ul>
     </div>
   </div>
@@ -323,12 +309,13 @@
     const STORAGE_KEY = "url_asistencia_estudiantes_puntos";
     let scriptUrl = localStorage.getItem(STORAGE_KEY) || "";
 
+    // Doble toque en el título para ingresar o modificar la URL del Apps Script
     document.getElementById("appTitle").addEventListener("dblclick", () => {
-      const nuevaUrl = prompt("Ingresa la URL del Web App de Apps Script (debe terminar en /exec):", scriptUrl);
+      const nuevaUrl = prompt("Ingresa la URL del Apps Script (/exec):", scriptUrl);
       if (nuevaUrl && nuevaUrl.trim() !== "") {
         scriptUrl = nuevaUrl.trim();
         localStorage.setItem(STORAGE_KEY, scriptUrl);
-        alert("Enlace actualizado exitosamente.");
+        alert("Enlace guardado.");
       }
     });
 
@@ -368,10 +355,13 @@
       if (historyList.children.length === 1 && historyList.children[0].style.fontStyle === "italic") {
         historyList.innerHTML = "";
       }
-      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const li = document.createElement("li");
       li.className = "history-item";
-      li.innerHTML = `<span><strong>${name}</strong> <small style="color: var(--text-muted)">(${time})</small></span> <span style="font-weight: 800; color: var(--gold-light);">${total} pts</span>`;
+      li.innerHTML = `
+        <span><strong>${name}</strong> <small style="color: var(--text-muted); font-size: 0.62rem;">(${time})</small></span>
+        <span style="font-weight: 800; color: var(--gold-light);">${total} pts</span>
+      `;
       historyList.prepend(li);
     }
 
@@ -380,17 +370,16 @@
       isScanningBlocked = true;
 
       if (!scriptUrl) {
-        alert("Haz doble clic en el título 'Control de Participación' para ingresar la URL de Google Apps Script.");
+        alert("Doble clic en el título para pegar la URL del Apps Script.");
         isScanningBlocked = false;
         return;
       }
 
       if (navigator.vibrate) navigator.vibrate(60);
 
-      // Estado instantáneo de procesamiento
       resultCard.className = "result-card";
       badgeStatus.innerText = "PROCESANDO...";
-      studentName.innerText = "Registrando punto...";
+      studentName.innerText = "Registrando...";
       scoreWrapper.style.display = "none";
       statusMsg.innerText = `ID: ${decodedText}`;
 
@@ -414,16 +403,16 @@
           studentName.innerText = data.nombre;
           totalPoints.innerText = data.totalPuntos;
           scoreWrapper.style.display = "block";
-          statusMsg.innerText = "Registrado en Google Sheets";
+          statusMsg.innerText = "Registrado en Sheets";
 
           addHistoryRow(data.nombre, data.totalPuntos);
         } else {
           emitBeep(false);
           resultCard.className = "result-card error";
           badgeStatus.innerText = "NO ENCONTRADO";
-          studentName.innerText = "Código sin registro";
+          studentName.innerText = "Sin registro";
           scoreWrapper.style.display = "none";
-          statusMsg.innerText = data.message || "No existe en la hoja Estudiantes.";
+          statusMsg.innerText = data.message || "No existe en la hoja.";
         }
       } catch (err) {
         emitBeep(false);
@@ -431,45 +420,29 @@
         badgeStatus.innerText = "ERROR DE CONEXIÓN";
         studentName.innerText = "Fallo de respuesta";
         scoreWrapper.style.display = "none";
-        statusMsg.innerText = "Revisa permisos o tu conexión a internet.";
+        statusMsg.innerText = "Revisa internet o Apps Script.";
       }
 
-      // Tiempo de espera reducido a 1.2 segundos para escaneo ágil
       setTimeout(() => {
         isScanningBlocked = false;
         badgeStatus.innerText = "ESPERANDO ESCANEO";
-        statusMsg.innerText = "Listo para el siguiente estudiante...";
+        statusMsg.innerText = "Listo para el siguiente...";
       }, 1200);
     }
 
-    // Configuración de escaneo a 25 FPS y cálculo de encuadre dinámico
+    // Configuración óptica estándar con lectura inmediata sin forzar deformación de aspecto
     const scanner = new Html5Qrcode("reader");
-    
-    function qrBoxFunction(viewfinderWidth, viewfinderHeight) {
-      const minEdgePercentage = 0.72;
-      const minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
-      const qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
-      return {
-        width: qrboxSize,
-        height: qrboxSize
-      };
-    }
-
     scanner.start(
       { facingMode: "environment" },
       {
-        fps: 25, // Mayor fluidez y lectura instantánea
-        qrbox: qrBoxFunction,
-        aspectRatio: 1.0,
-        experimentalFeatures: {
-          useBarCodeDetectorIfSupported: true // Aceleración nativa por hardware si el móvil lo soporta
-        }
+        fps: 20,
+        qrbox: { width: 170, height: 170 }
       },
       onScanSuccess,
       () => {}
     ).catch(err => {
-      console.error("Error al iniciar cámara:", err);
-      statusMsg.innerText = "Permiso de cámara denegado o requiere HTTPS.";
+      console.error(err);
+      statusMsg.innerText = "Requiere HTTPS o permisos de cámara.";
     });
   </script>
 </body>
